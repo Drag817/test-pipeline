@@ -30,5 +30,8 @@ jobs:
     needs: build
     runs-on: primary
     steps:
+      - name: Docker login
+        run: sudo docker login --username oauth --password ${{ secrets.YANDEX_OAUTH }} cr.yandex
+
       - name: Deploy
         run: sudo docker run -d cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
