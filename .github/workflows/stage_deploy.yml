@@ -9,7 +9,10 @@ jobs:
     runs-on: primary
     steps:
       - name: Get balancer backend group info
-        run: alb backend-group get production
+        uses: nikita-volkov/yc-cli.github-action@v1.0.0
+        with:
+          key: ${{ secrets.SA_PRIVATE_KEY }}
+          args: alb backend-group get production
 
 #  build:
 #    needs: chose-instance
