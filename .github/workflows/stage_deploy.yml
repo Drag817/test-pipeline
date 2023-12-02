@@ -1,0 +1,26 @@
+name: Stage auto deploy
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main and Submodules
+        uses: actions/checkout@v3
+
+      - name: Docker login
+        run: sudo docker login --username oauth --password ${{ secrets.YANDEX_OAUTH }} cr.yandex
+
+      - name: Show variables
+        run: |
+          echo $(git submodule status)
+          echo $(git submodule status | grep front)
+      #- name: Build Docker
+       # run: |
+        #  sudo docker build --build-arg version="$(git submodule status | grep front)" --cache-from cr.yandex/${{ secrets.DOCKER_REGISTRY }}/app:${{ github.ref_name }} -f Dockerfile -t cr.yandex/${{ secrets.DOCKER_REGISTRY }}/app:${{ github.ref_name }} .
+         # sudo docker push cr.yandex/${{ secrets.DOCKER_REGISTRY }}/app:${{ github.ref_name }}
+
+
