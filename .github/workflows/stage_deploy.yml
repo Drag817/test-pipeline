@@ -5,22 +5,29 @@ on:
     branches: [ "master" ]
 
 jobs:
-#  build:
+#  chose-instance:
 #    runs-on: ubuntu-latest
 #    steps:
-#      - name: Checkout main and Submodules
-#        uses: actions/checkout@v3
-#
-#      - name: Docker login
-#        run: sudo docker login --username oauth --password ${{ secrets.YANDEX_OAUTH }} cr.yandex
-#
-#      - name: Build Docker
-#        run: |
-#          sudo docker build --cache-from cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} -f Dockerfile -t cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} .
-#          sudo docker push cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
+#      - name: Get
+#        run: sudo docker run -d cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
+
+  build:
+#    needs: chose-instance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main and Submodules
+        uses: actions/checkout@v3
+
+      - name: Docker login
+        run: sudo docker login --username oauth --password ${{ secrets.YANDEX_OAUTH }} cr.yandex
+
+      - name: Build Docker
+        run: |
+          sudo docker build --cache-from cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} -f Dockerfile -t cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} .
+          sudo docker push cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
 
   deploy:
-#    needs: build
+    needs: build
     runs-on: primary
     steps:
       - name: Deploy
