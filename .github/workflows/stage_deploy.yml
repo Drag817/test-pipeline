@@ -8,8 +8,14 @@ jobs:
   chose-instance:
     runs-on: primary
     steps:
+      - name: yc setup
+        uses: nightstory/setup-yc@v1
+        with:
+          enable-cache: true
+
       - name: Get balancer backend group info
-        run: yc alb backend-group get production
+        run: |
+          yc alb backend-group get production
 
 #  build:
 #    needs: chose-instance
