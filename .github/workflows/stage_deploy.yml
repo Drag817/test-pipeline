@@ -19,4 +19,9 @@ jobs:
           sudo docker build --cache-from cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} -f Dockerfile -t cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} .
           sudo docker push cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
 
-
+  deploy:
+    needs: build
+    runs-on: prod-1
+    steps:
+      - name: Deploy
+        run: sudo docker run -d cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
