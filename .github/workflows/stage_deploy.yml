@@ -21,7 +21,7 @@ jobs:
 
   deploy:
 #    needs: build
-    runs-on: ["self-hosted", "primary"]
+    runs-on: prod-1
     steps:
       - name: Deploy
         run: sudo docker run -d cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
