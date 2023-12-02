@@ -5,33 +5,33 @@ on:
     branches: [ "master" ]
 
 jobs:
-#  chose-instance:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Get
-#        run: sudo docker run -d cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
-
-  build:
-#    needs: chose-instance
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout main and Submodules
-        uses: actions/checkout@v3
-
-      - name: Docker login
-        run: sudo docker login --username oauth --password ${{ secrets.YANDEX_OAUTH }} cr.yandex
-
-      - name: Build Docker
-        run: |
-          sudo docker build --cache-from cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} -f Dockerfile -t cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} .
-          sudo docker push cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
-
-  deploy:
-    needs: build
+  chose-instance:
     runs-on: primary
     steps:
-      - name: Docker login
-        run: sudo docker login --username oauth --password ${{ secrets.YANDEX_OAUTH }} cr.yandex
+      - name: Get balancer backend group info
+        run: alb backend-group get production
 
-      - name: Deploy
-        run: sudo docker run -d cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
+#  build:
+#    needs: chose-instance
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout main and Submodules
+#        uses: actions/checkout@v3
+#
+#      - name: Docker login
+#        run: sudo docker login --username oauth --password ${{ secrets.YANDEX_OAUTH }} cr.yandex
+#
+#      - name: Build Docker
+#        run: |
+#          sudo docker build --cache-from cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} -f Dockerfile -t cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} .
+#          sudo docker push cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
+#
+#  deploy:
+#    needs: build
+#    runs-on: primary
+#    steps:
+#      - name: Docker login
+#        run: sudo docker login --username oauth --password ${{ secrets.YANDEX_OAUTH }} cr.yandex
+#
+#      - name: Deploy
+#        run: sudo docker run -d -p 5000:5000 cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
