@@ -35,12 +35,13 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Get active
-        id: active-info
-        run: echo "active=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT" # change "production" to <backend-group name>
+#      - name: Get active
+#        id: active-info
+#        run: echo "active=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT" # change "production" to <backend-group name>
 
       - name: if secondary active
-        if: ${{ steps.active-info.outputs.active == 0 }}
+#        if: ${{ steps.active-info.outputs.active == 0 }}
+        if: ${{ yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]' == 0 }}
         run: | # need to change instance name in FIRST string to "primary" instance AND rename instances, backend group names, names (ex. primary | secondary)
           yc compute instance stop prod-2 && yc compute instance update prod-2 --memory 12 --cores 6 && yc compute instance start prod-2
           sleep 120
@@ -49,7 +50,7 @@ jobs:
           yc compute instance stop prod-2 && yc compute instance update prod-2 --memory 4 --cores 2 && yc compute instance start prod-2
 
       - name: if primary active
-        if: ${{ needs.get-active.outputs.active == 100 }}
+        if: ${{ yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]' == 100 }}
         run: | # need to change instance name in LAST string to "secondary" instance AND rename instances, backend group names, names (ex. primary | secondary)
           yc compute instance stop prod-2 && yc compute instance update prod-2 --memory 12 --cores 6 && yc compute instance start prod-2
           sleep 120
