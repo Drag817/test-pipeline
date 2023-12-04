@@ -9,7 +9,7 @@ jobs:
   get-active:
     runs-on: "0" # change to "dev"
     outputs:
-      active: ${{ steps.group-info.outputs.runner }}
+      active: ${{ steps.group-info.outputs.active }}
     steps:
       - name: install jq (yq)
         run: sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
@@ -21,17 +21,17 @@ jobs:
 
       - name: Get group info
         id: group-info
-        run: echo "runner=$(yc alb backend-group get production | yq '.["http"]["backends"][1]["backend_weight"]')" >> "$GITHUB_OUTPUT"
+        run: echo "active=$(yc alb backend-group get production | yq '.["http"]["backends"][1]["backend_weight"]')" >> "$GITHUB_OUTPUT"
 
   upgrade-instance-class:
     needs: get-active
     runs-on: "0" # change to "dev"
     steps:
       - name: show active
-        run: echo "${{ needs.chose-instance.outputs.active }}"
+        run: echo "${{ needs.get-active.outputs.active }}"
 
       - name: if secondary active
-        if: ${{ needs.chose-instance.outputs.active == 0 }}
+        if: ${{ needs.get-active.outputs.active == 0 }}
         run: |
-          echo "${{ needs.chose-instance.outputs.active == 0 }}"
+          echo "${{ needs.get-active.outputs.active == 0 }}"
           echo "upgrade primary instance ..."
