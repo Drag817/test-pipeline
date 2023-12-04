@@ -19,8 +19,7 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Get primary instance weight
-        id: group-info
+      - id: group-info
         run: echo "runner=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT"
 
 #      - name: Check primary
