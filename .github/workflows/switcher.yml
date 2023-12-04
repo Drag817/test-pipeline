@@ -28,5 +28,5 @@ jobs:
     runs-on: "0" # change to "dev"
     steps:
       - name: if secondary active
-        if: ${{ needs.chose-instance.outputs.active == "0" }}
+        if: ${{ needs.chose-instance.outputs.active == 0 }}
         run: echo "upgrade primary instance ..."

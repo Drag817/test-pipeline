@@ -2,7 +2,7 @@ name: Stage auto deploy
 
 on:
   push:
-    branches: [ "master" ] # change to "main"
+    branches: [ "main" ] # change to "master" if you want that works here
 
 jobs:
   build:
