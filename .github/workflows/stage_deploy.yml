@@ -11,6 +11,9 @@ jobs:
     outputs:
       output: ${{ steps.group-info.outputs.* }}
     steps:
+      - name: install jq (yq)
+        run: sudo apt install jq
+
       - name: yc setup
         uses: nightstory/setup-yc@v1
         with:
