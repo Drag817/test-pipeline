@@ -19,10 +19,10 @@ jobs:
         with:
           enable-cache: true
 
-      - id: group-info
+      - name: Get group info
+        id: group-info
         run: |
           echo "runner=hello" >> "$GITHUB_OUTPUT"
-          echo $GITHUB_OUTPUT
 #        run: echo "runner=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT"
 
 #      - name: Check primary
@@ -44,9 +44,12 @@ jobs:
 #      RUNNER: ${{ needs.job1.outputs.runner }}
     runs-on: ubuntu-latest
     steps:
-      - env:
-          RUNNER: ${{ needs.chose-instance.outputs.runner }}
-        run: echo "$RUNNER"
+      - name: test
+        run: |
+          echo "${{ chose-instance.outputs.runner }}"
+#      - env:
+#          RUNNER: ${{ needs.chose-instance.outputs.runner }}
+#        run: echo "$RUNNER"
 #        run: echo "${{ needs.chose-instance.outputs.runner }}"
 
 
