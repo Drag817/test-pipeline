@@ -21,7 +21,7 @@ jobs:
 
       - name: Get group info
         id: group-info
-        run: echo "runner=$(yc alb backend-group get production | yq '.["http"]["backends"][1]["backend_weight"]')" >> "$GITHUB_OUTPUT"
+        run: echo "runner=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT"
 #        run: |
 #          echo "runner=hello" >> "$GITHUB_OUTPUT"
 
@@ -45,10 +45,11 @@ jobs:
     needs: chose-instance
 #    env:
 #      RUNNER: ${{ needs.job1.outputs.runner }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.chose-instance.outputs.output }}
     steps:
       - name: test
-        run: echo ${{ needs.chose-instance.outputs.output }}
+        run: echo "it works!"
+#        run: echo ${{ needs.chose-instance.outputs.output }}
 #      - env:
 #          RUNNER: ${{ needs.chose-instance.outputs.runner }}
 #        run: echo "$RUNNER"
