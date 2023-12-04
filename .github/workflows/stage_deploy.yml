@@ -12,7 +12,7 @@ jobs:
       output: ${{ steps.group-info.outputs.* }}
     steps:
       - name: install jq (yq)
-        run: sudo apt install jq
+        run: wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
 
       - name: yc setup
         uses: nightstory/setup-yc@v1
