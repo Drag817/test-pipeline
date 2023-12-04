@@ -44,7 +44,7 @@ jobs:
     steps:
       - name: echo runner
 #        run: echo "$RUNNER"
-        run: echo "${{ chose-instance.group-info.outputs.runner }}"
+        run: echo "${{ needs.chose-instance.outputs.runner }}"
 
 
 #  build:
