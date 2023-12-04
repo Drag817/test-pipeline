@@ -3,19 +3,42 @@ name: Stage auto deploy
 on:
   push:
     branches: [ "master" ]
+  workflow_dispatch:
 
 jobs:
   chose-instance:
     runs-on: primary
+#    outputs:
+#      output: ${{ steps.group-info.outputs.* }}
     steps:
       - name: yc setup
         uses: nightstory/setup-yc@v1
         with:
           enable-cache: true
 
-      - name: Get balancer backend group info
-        run: |
-          yc alb backend-group get production
+#      - name: Get primary instance weight
+#        id: group-info
+#        run: yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]'
+
+      - name: Check primary
+        if: ${{ (yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]' == "0") }}
+        run: echo "runner is primary"
+        env:
+          RUNNER: primary
+
+      - name: Check secondary
+        if: ${{ (yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]' == "100") }}
+        run: echo "runner is secondary"
+        env:
+          RUNNER: secondary
+
+  show-instance:
+    needs: chose-instance
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo runner
+        run: echo "$RUNNER"
+
 
 #  build:
 #    needs: chose-instance
