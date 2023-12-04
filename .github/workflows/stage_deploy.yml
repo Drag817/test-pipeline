@@ -42,9 +42,10 @@ jobs:
 #      RUNNER: ${{ needs.job1.outputs.runner }}
     runs-on: ubuntu-latest
     steps:
-      - name: echo runner
-#        run: echo "$RUNNER"
-        run: echo "${{ needs.chose-instance.outputs.runner }}"
+      - env:
+          RUNNER: ${{ needs.chose-instance.outputs.runner }}
+        run: echo "$RUNNER"
+#        run: echo "${{ needs.chose-instance.outputs.runner }}"
 
 
 #  build:
