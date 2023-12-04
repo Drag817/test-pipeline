@@ -20,7 +20,9 @@ jobs:
           enable-cache: true
 
       - id: group-info
-        run: echo "runner=hello" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "runner=hello" >> "$GITHUB_OUTPUT"
+          echo $GITHUB_OUTPUT
 #        run: echo "runner=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT"
 
 #      - name: Check primary
