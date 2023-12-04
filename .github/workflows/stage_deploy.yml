@@ -8,17 +8,17 @@ on:
 jobs:
   chose-instance:
     runs-on: primary
-#    outputs:
-#      output: ${{ steps.group-info.outputs.* }}
+    outputs:
+      output: ${{ steps.group-info.outputs.* }}
     steps:
       - name: yc setup
         uses: nightstory/setup-yc@v1
         with:
           enable-cache: true
 
-#      - name: Get primary instance weight
-#        id: group-info
-#        run: yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]'
+      - name: Get primary instance weight
+        id: group-info
+        run: yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]' >> "$GITHUB_OUTPUT"
 
 #      - name: Check primary
 #        if: ${{ (yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]' == "0") }}
@@ -26,10 +26,10 @@ jobs:
 #        env:
 #          RUNNER: primary
 
-      - name: Check secondary
-        env:
-          RUNNER: ${{ (yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]') }}
-        run: echo "runner is $RUNNER"
+#      - name: Check secondary
+#        env:
+#          RUNNER: ${{ (yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]') }}
+#        run: echo "runner is $RUNNER"
 #        env:
 #          RUNNER: secondary
 
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: echo runner
-        run: echo "$RUNNER"
+        run: echo ${{ steps.group-info.outputs.* }}
 
 
 #  build:
