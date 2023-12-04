@@ -27,6 +27,14 @@ jobs:
     needs: get-active
     runs-on: "0" # change to "dev"
     steps:
+      - name: install jq (yq)
+        run: sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
+
+      - name: yc setup
+        uses: nightstory/setup-yc@v1
+        with:
+          enable-cache: true
+
       - name: if secondary active
         if: ${{ needs.get-active.outputs.active == 0 }}
         run: | # need to change instance name in last string
