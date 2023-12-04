@@ -48,7 +48,7 @@ jobs:
     steps:
       - name: test
         run: |
-          echo "${{ needs.chose-instance.steps.group-info.outputs.output }}"
+          echo "${{ needs.chose-instance.outputs.output }}"
 #      - env:
 #          RUNNER: ${{ needs.chose-instance.outputs.runner }}
 #        run: echo "$RUNNER"
