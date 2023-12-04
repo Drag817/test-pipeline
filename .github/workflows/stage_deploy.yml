@@ -38,12 +38,13 @@ jobs:
 
   show-instance:
     needs: chose-instance
-    env:
-      RUNNER: ${{ job1.outputs.runner }}
+#    env:
+#      RUNNER: ${{ needs.job1.outputs.runner }}
     runs-on: ubuntu-latest
     steps:
       - name: echo runner
-        run: echo "$RUNNER"
+#        run: echo "$RUNNER"
+        run: ${{ needs.job1.outputs.runner }}
 
 
 #  build:
