@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: test
-        run: echo "${{ needs.chose-instance.outputs.output }}"
+        run: echo ${{ needs.chose-instance.outputs.output }}
 #      - env:
 #          RUNNER: ${{ needs.chose-instance.outputs.runner }}
 #        run: echo "$RUNNER"
