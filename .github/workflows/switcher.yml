@@ -1,0 +1,32 @@
+name: Switch production instance
+
+on:
+  push:
+    branches: [ "master" ] # delete in prod
+  workflow_dispatch:
+
+jobs:
+  get-active:
+    runs-on: "0" # change to "dev"
+    outputs:
+      active: ${{ steps.group-info.outputs.runner }}
+    steps:
+      - name: install jq (yq)
+        run: sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
+
+      - name: yc setup
+        uses: nightstory/setup-yc@v1
+        with:
+          enable-cache: true
+
+      - name: Get group info
+        id: group-info
+        run: echo "runner=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT"
+
+  upgrade-instance-class:
+    needs: get-active
+    runs-on: "0" # change to "dev"
+    steps:
+      - name: if secondary active
+        if: ${{ needs.chose-instance.outputs.active == "0" }}
+        run: echo "upgrade primary instance ..."

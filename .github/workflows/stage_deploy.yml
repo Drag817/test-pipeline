@@ -2,14 +2,27 @@ name: Stage auto deploy
 
 on:
   push:
-    branches: [ "master" ]
-  workflow_dispatch:
+    branches: [ "master" ] # change to "main"
 
 jobs:
+  build:
+    runs-on: "0" # change to "dev"
+    steps:
+      - name: Checkout main and Submodules
+        uses: actions/checkout@v3
+
+      - name: Docker login
+        run: sudo docker login --username oauth --password ${{ secrets.YANDEX_OAUTH }} cr.yandex # paste "main" commands
+
+      - name: Build Docker
+        run: | # paste "main" commands
+          sudo docker build --cache-from cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} -f Dockerfile -t cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} .
+          sudo docker push cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
+
   chose-instance:
-    runs-on: "0"
+    runs-on: "0" # change to "dev"
     outputs:
-      output: ${{ steps.group-info.outputs.runner }}
+      runner: ${{ steps.group-info.outputs.runner }}
     steps:
       - name: install jq (yq)
         run: sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
@@ -21,62 +34,14 @@ jobs:
 
       - name: Get group info
         id: group-info
-        run: echo "runner=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT"
-#        run: |
-#          echo "runner=hello" >> "$GITHUB_OUTPUT"
+        run: echo "runner=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT" # change "production" to <backend-group name>
 
-
-
-
-#      - name: Check primary
-#        if: ${{ (yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]' == "0") }}
-#        run: echo "runner is primary"
-#        env:
-#          RUNNER: primary
-
-#      - name: Check secondary
-#        env:
-#          RUNNER: ${{ (yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]') }}
-#        run: echo "runner is $RUNNER"
-#        env:
-#          RUNNER: secondary
-
-  show-instance:
-    needs: chose-instance
-#    env:
-#      RUNNER: ${{ needs.job1.outputs.runner }}
-    runs-on: ${{ needs.chose-instance.outputs.output }}
+  deploy:
+    needs: [ build, chose-instance ]
+    runs-on: ${{ needs.chose-instance.outputs.runner }}
     steps:
-      - name: test
-        run: echo "it works!"
-#        run: echo ${{ needs.chose-instance.outputs.output }}
-#      - env:
-#          RUNNER: ${{ needs.chose-instance.outputs.runner }}
-#        run: echo "$RUNNER"
-#        run: echo "${{ needs.chose-instance.outputs.runner }}"
+      - name: Docker login
+        run: sudo docker login --username oauth --password ${{ secrets.YANDEX_OAUTH }} cr.yandex # paste "main" commands
 
-
-#  build:
-#    needs: chose-instance
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout main and Submodules
-#        uses: actions/checkout@v3
-#
-#      - name: Docker login
-#        run: sudo docker login --username oauth --password ${{ secrets.YANDEX_OAUTH }} cr.yandex
-#
-#      - name: Build Docker
-#        run: |
-#          sudo docker build --cache-from cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} -f Dockerfile -t cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} .
-#          sudo docker push cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
-#
-#  deploy:
-#    needs: build
-#    runs-on: primary
-#    steps:
-#      - name: Docker login
-#        run: sudo docker login --username oauth --password ${{ secrets.YANDEX_OAUTH }} cr.yandex
-#
-#      - name: Deploy
-#        run: sudo docker run -d -p 5000:5000 cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
+      - name: Deploy
+        run: sudo docker run -d cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} # paste "main" commands
