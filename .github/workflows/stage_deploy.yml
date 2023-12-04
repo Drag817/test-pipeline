@@ -20,17 +20,18 @@ jobs:
 #        id: group-info
 #        run: yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]'
 
-      - name: Check primary
-        if: ${{ (yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]' == "0") }}
-        run: echo "runner is primary"
-        env:
-          RUNNER: primary
+#      - name: Check primary
+#        if: ${{ (yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]' == "0") }}
+#        run: echo "runner is primary"
+#        env:
+#          RUNNER: primary
 
       - name: Check secondary
-        if: ${{ (yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]' == "100") }}
-        run: echo "runner is secondary"
         env:
-          RUNNER: secondary
+          RUNNER: ${{ (yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]') }}
+        run: echo "runner is $RUNNER"
+#        env:
+#          RUNNER: secondary
 
   show-instance:
     needs: chose-instance
