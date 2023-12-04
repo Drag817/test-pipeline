@@ -44,7 +44,7 @@ jobs:
     steps:
       - name: echo runner
 #        run: echo "$RUNNER"
-        run: echo ${{ needs.job1.outputs.runner }}
+        run: echo "${{ needs.job1.outputs.runner }}"
 
 
 #  build:
