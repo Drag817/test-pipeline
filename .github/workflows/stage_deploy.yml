@@ -46,7 +46,7 @@ jobs:
     steps:
       - name: test
         run: |
-          echo "${{ chose-instance.outputs.runner }}"
+          echo "${{ needs.chose-instance.outputs.runner }}"
 #      - env:
 #          RUNNER: ${{ needs.chose-instance.outputs.runner }}
 #        run: echo "$RUNNER"
