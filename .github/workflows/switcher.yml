@@ -1,30 +1,10 @@
 name: Switch production instance
 
 on:
-  push:
-    branches: [ "master" ] # delete in prod
   workflow_dispatch:
 
 jobs:
-#  get-active:
-#    runs-on: "0" # change to "dev"
-#    outputs:
-#      active: ${{ steps.group-info.outputs.active }}
-#    steps:
-#      - name: install jq (yq)
-#        run: sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
-#
-#      - name: yc setup
-#        uses: nightstory/setup-yc@v1
-#        with:
-#          enable-cache: true
-#
-#      - name: Get group info
-#        id: group-info
-#        run: echo "active=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT" # change "production" to <backend-group name>
-
   switch-instance:
-#    needs: get-active
     runs-on: "0" # change to "dev"
     steps:
       - name: Install jq (yq)
@@ -40,7 +20,6 @@ jobs:
         run: echo "active=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT" # change "production" to <backend-group name>
 
       - name: if secondary active
-#        if: ${{ steps.active-info.outputs.active == 0 }}
         if: ${{ steps.active-info.outputs.active == 0 }}
         run: | # need to change instance name in FIRST string to "primary" instance AND rename instances, backend group names, names (ex. primary | secondary)
           yc compute instance stop prod-2 && yc compute instance update prod-2 --memory 12 --cores 6 && yc compute instance start prod-2
