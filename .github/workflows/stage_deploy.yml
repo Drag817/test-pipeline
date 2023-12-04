@@ -24,6 +24,10 @@ jobs:
         run: |
           echo "runner=hello" >> "$GITHUB_OUTPUT"
 
+      - name: env add
+        env:
+          runner:
+
 
 #        run: echo "runner=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT"
 
@@ -48,7 +52,7 @@ jobs:
     steps:
       - name: test
         run: |
-          echo "${{ needs.choseinstance.steps.groupinfo.outputs.runner }}"
+          echo "${{ needs.choseinstance.steps.groupinfo.outputs.output }}"
 #      - env:
 #          RUNNER: ${{ needs.chose-instance.outputs.runner }}
 #        run: echo "$RUNNER"
