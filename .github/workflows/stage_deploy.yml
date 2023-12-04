@@ -21,7 +21,7 @@ jobs:
 
       - name: Get primary instance weight
         id: group-info
-        run: runner=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]') >> "$GITHUB_OUTPUT"
+        run: runner = $(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]') >> "$GITHUB_OUTPUT"
 
 #      - name: Check primary
 #        if: ${{ (yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]' == "0") }}
@@ -38,10 +38,12 @@ jobs:
 
   show-instance:
     needs: chose-instance
+    env:
+      RUNNER: ${{ needs.job1.outputs.runner }}
     runs-on: ubuntu-latest
     steps:
       - name: echo runner
-        run: echo ${{ steps.group-info.outputs.runner }}
+        run: echo "$RUNNER"
 
 
 #  build:
