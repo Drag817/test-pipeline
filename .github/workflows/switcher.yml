@@ -21,7 +21,7 @@ jobs:
 
       - name: Get group info
         id: group-info
-        run: echo "active=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT"
+        run: echo "active=$(yc alb backend-group get production | yq '.["http"]["backends"][1]["backend_weight"]')" >> "$GITHUB_OUTPUT"
 
   upgrade-instance-class:
     needs: get-active
