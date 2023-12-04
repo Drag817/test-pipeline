@@ -39,7 +39,7 @@ jobs:
   show-instance:
     needs: chose-instance
     env:
-      RUNNER: ${{ needs.job1.outputs.runner }}
+      RUNNER: ${{ job1.outputs.runner }}
     runs-on: ubuntu-latest
     steps:
       - name: echo runner
