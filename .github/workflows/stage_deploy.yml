@@ -9,7 +9,7 @@ jobs:
   chose-instance:
     runs-on: "0"
     outputs:
-      output: ${{ steps.group-info.outputs.runner }}
+      output: "${{ steps.group-info.outputs.runner }}"
     steps:
       - name: install jq (yq)
         run: sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
