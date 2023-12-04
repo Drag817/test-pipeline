@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  chose-instance:
+  choseinstance:
     runs-on: "0"
     outputs:
-      output: ${{ steps.group-info.outputs.runner }}
+      output: ${{ steps.groupinfo.outputs.runner }}
     steps:
       - name: install jq (yq)
         run: sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
@@ -20,9 +20,11 @@ jobs:
           enable-cache: true
 
       - name: Get group info
-        id: group-info
+        id: groupinfo
         run: |
           echo "runner=hello" >> "$GITHUB_OUTPUT"
+
+
 #        run: echo "runner=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT"
 
 #      - name: Check primary
@@ -39,14 +41,14 @@ jobs:
 #          RUNNER: secondary
 
   show-instance:
-    needs: chose-instance
+    needs: choseinstance
 #    env:
 #      RUNNER: ${{ needs.job1.outputs.runner }}
     runs-on: ubuntu-latest
     steps:
       - name: test
         run: |
-          echo "${{ needs.chose-instance.steps.group-info.outputs.runner }}"
+          echo "${{ needs.choseinstance.steps.groupinfo.outputs.runner }}"
 #      - env:
 #          RUNNER: ${{ needs.chose-instance.outputs.runner }}
 #        run: echo "$RUNNER"
