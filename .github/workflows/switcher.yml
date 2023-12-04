@@ -21,17 +21,26 @@ jobs:
 
       - name: Get group info
         id: group-info
-        run: echo "active=$(yc alb backend-group get production | yq '.["http"]["backends"][1]["backend_weight"]')" >> "$GITHUB_OUTPUT"
+        run: echo "active=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT" # change "production" to <backend-group name>
 
-  upgrade-instance-class:
+  switch-instance:
     needs: get-active
     runs-on: "0" # change to "dev"
     steps:
-      - name: show active
-        run: echo "${{ needs.get-active.outputs.active }}"
-
       - name: if secondary active
         if: ${{ needs.get-active.outputs.active == 0 }}
+        run: | # need to change instance name in last string
+          yc compute instance stop prod-2 && yc compute instance update prod-2 --memory 12 --cores 6 && yc compute instance start prod-2
+          sleep 120
+          yc alb backend-group update-http-backend --backend-group-name production --name primary --weight 100 && yc alb backend-group update-http-backend --backend-group-name production --name secondary --weight 0
+          sleep 180
+          yc compute instance stop prod-2 && yc compute instance update prod-2 --memory 4 --cores 2 && yc compute instance start prod-2
+
+      - name: if primary active # only for examle
+        if: ${{ needs.get-active.outputs.active == 100 }}
         run: |
-          echo "${{ needs.get-active.outputs.active == 0 }}"
-          echo "upgrade primary instance ..."
+          yc compute instance stop prod-2 && yc compute instance update prod-2 --memory 12 --cores 6 && yc compute instance start prod-2
+          sleep 120
+          yc alb backend-group update-http-backend --backend-group-name production --name primary --weight 100 && yc alb backend-group update-http-backend --backend-group-name production --name secondary --weight 0
+          sleep 180
+          yc compute instance stop prod-2 && yc compute instance update prod-2 --memory 4 --cores 2 && yc compute instance start prod-2
