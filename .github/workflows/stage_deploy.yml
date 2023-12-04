@@ -9,7 +9,7 @@ jobs:
   chose-instance:
     runs-on: "0"
     outputs:
-      output: "${{ steps.group-info.outputs.output }}"
+      output: ${{ steps.group-info.outputs.runner }}
     steps:
       - name: install jq (yq)
         run: sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
@@ -21,7 +21,7 @@ jobs:
 
       - name: Get primary instance weight
         id: group-info
-        run: yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]' >> "$GITHUB_OUTPUT"
+        run: runner=(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]') >> "$GITHUB_OUTPUT"
 
 #      - name: Check primary
 #        if: ${{ (yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]' == "0") }}
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: echo runner
-        run: echo ${{ steps.group-info.outputs.output }}
+        run: echo ${{ steps.group-info.outputs.runner }}
 
 
 #  build:
