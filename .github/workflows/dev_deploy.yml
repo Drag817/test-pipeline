@@ -1,0 +1,30 @@
+name: Dev deploy
+
+on:
+  push:
+    branches: [ "dev" ]
+
+jobs:
+  build:
+    runs-on: "0" # change to "dev"
+    steps:
+      - name: Checkout main and Submodules
+        uses: actions/checkout@v3
+
+      - name: Docker login
+        run: sudo docker login --username oauth --password ${{ secrets.YANDEX_OAUTH }} cr.yandex # paste "main" commands
+
+      - name: Build Docker
+        run: | # paste "main" commands
+          sudo docker build --cache-from cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} -f Dockerfile -t cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} .
+          sudo docker push cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }}
+
+  deploy:
+    needs: build
+    runs-on: "0" # change to "dev"
+    steps:
+      - name: Docker login
+        run: sudo docker login --username oauth --password ${{ secrets.YANDEX_OAUTH }} cr.yandex # paste "main" commands
+
+      - name: Deploy
+        run: sudo docker run -d cr.yandex/${{ secrets.DOCKER_REGISTRY }}/test:${{ github.ref_name }} # paste "main" commands
