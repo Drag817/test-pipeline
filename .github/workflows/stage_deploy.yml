@@ -2,7 +2,7 @@ name: Stage auto deploy
 
 on:
   push:
-    branches: [ "main", "dev" ] # change to "master" if you want that works here
+    branches: [ "main" ] # change to "master" if you want that works here
 
 jobs:
   build:
@@ -32,15 +32,9 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Get group info if main branch
-        if: ${{ github.ref_name == 'main' }}
+      - name: Get group info
         id: group-info
         run: echo "runner=$(yc alb backend-group get production | yq '.["http"]["backends"][0]["backend_weight"]')" >> "$GITHUB_OUTPUT" # change "production" to <backend-group name>
-
-      - name: Set dev runner if dev branch
-        if: ${{ github.ref_name == 'dev' }}
-        id: group-info
-        run: echo "runner=dev" >> "$GITHUB_OUTPUT"
 
   deploy:
     needs: [ build, chose-instance ]
