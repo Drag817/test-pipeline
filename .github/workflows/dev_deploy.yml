@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: "0" # change to "dev"
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout main and Submodules
         run: echo "${{ github.run_id }}-${{ github.run_attempt }}"
